@@ -35,7 +35,14 @@ const render = function () {
       item.completed = !item.completed;
       render();     
     });
-    
+    const btnTodoRemove = li.querySelector('.todo-remove'); // получение со страницы
+    btnTodoRemove.addEventListener('click', function () { // обработчик событий по клику , callbak функция
+   
+    todoData.splice(todoData.indexOf(item), 1); // изменяем массив возвращая первый индекс
+    localStorage.setItem('todo', JSON.stringify(todoData)); // JSON.stringify для преобразования объектов в JSON.
+    render();
+});
+    localStorage.setItem('todo', JSON.stringify(todoData)); 
   });
   
 };
@@ -52,8 +59,8 @@ todoControl.addEventListener('submit', function (event) {
 
   const newTodo = {
     value: headerInput.value,
-    completed: false,
-    remove:false
+    completed: false
+   
   };
   console.log(newTodo);
   if (newTodo.value !== '') {    
@@ -63,8 +70,10 @@ todoControl.addEventListener('submit', function (event) {
     alert('Введите новое дело!');
     
   }
-   localStorage.setItem('todo', JSON.stringify(todoData));
   headerInput.value = '';
+   localStorage.setItem('todo', JSON.stringify(todoData));
+ 
+
 
 });
 render();
