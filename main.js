@@ -1,53 +1,72 @@
 'use strict';
 
-function setCookie(key, value, year, month, day, path, domain, secure) {
-  let cookieStr = encodeURI(key) + '=' + encodeURI(value);
-  if (year) {
-    const expires = new Date(year, month, day-30);
-    cookieStr += '; expires=' + expires.toGMTString();
-  }
-  cookieStr += path ? '; path=' + encodeURI(path) : '';
-  cookieStr += domain ? '; domain=' + encodeURI(domain) : '';
-  cookieStr += secure ? '; secure' : '';
-  document.cookie = cookieStr;
-  
 
-}
+const todoControl = document.querySelector('.todo-control'),
+  headerInput = document.querySelector('.header-input'),
+  todoList = document.querySelector('.todo-list'),
+  todoCompleted = document.querySelector('.todo-completed'), 
+  addBtn = document.querySelector('.header-button');
+
+let todoData = [];
+const render = function () {
+  todoList.textContent = '';
+  todoCompleted.textContent = '';
  
 
-setCookie('Любимый праздник у детей', 'Новый год! ', 2022, 1, 1);
+  todoData.forEach(function (item) {
+    
+    const li = document.createElement('li');
+    li.classList.add('todo-item');
 
-console.log(decodeURI(document.cookie)); 
- document.cookie = 'имя=значение';
-document.cookie = 'имя2=значение2';
-document.cookie = 'имя3=значение3';
-document.cookie = 'имя=значение4';
+    li.innerHTML = '<span class="text-todo">' + item.value + '</span>' +
+      '<div class="todo-buttons">' +
+      '<button class="todo-remove"></button>' +
+      '<button class="todo-complete"></button>' +
+      '</div>';
 
-document.cookie = 'hope=life; expires=Tue, 7 May 2024 00:00:00 GMT'; 
- console.log(document.cookie.slice(', ')); 
+    if (item.completed) {
+      todoCompleted.append(li);
+    } else {
+      todoList.append(li);
+    }
+    
+    const btnTodoComplete = li.querySelector('.todo-complete');
+    btnTodoComplete.addEventListener('click', function () {
+      item.completed = !item.completed;
+      render();     
+    });
+    
+  });
+  
+};
 
 
+if (localStorage.getItem('todo')) {
+  todoData = JSON.parse(localStorage.getItem('todo'));
+  render();
 
+};
 
-const inputText = document.getElementById('myText'),
-  myBtn = document.getElementById('myBtn'),
-  text = document.getElementById('text');
+todoControl.addEventListener('submit', function (event) {
+  event.preventDefault();
 
-const showText = function () {
-  text.textContent = localStorage.getItem('memory');// метод getItem для получения нового значения
-}
+  const newTodo = {
+    value: headerInput.value,
+    completed: false,
+    remove:false
+  };
+  console.log(newTodo);
+  if (newTodo.value !== '') {    
+  todoData.push(newTodo);
+  render();
+  } else {
+    alert('Введите новое дело!');
+    
+  }
+   localStorage.setItem('todo', JSON.stringify(todoData));
+  headerInput.value = '';
 
-myBtn.addEventListener('click', function () {
-  localStorage.setItem('memory', inputText.value); // метод setItem для записи нового значения
-  showText();
 });
-showText();
-
-/* localStorage.removeItem('myText');  */
+render();
 
 
-/* myBtn.addEventListener('click', function () {
-  localStorage.myText = inputText.value;
-  showText();
-});
-showText(); */
